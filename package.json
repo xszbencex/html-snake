@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Simple HTML Snake game",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
