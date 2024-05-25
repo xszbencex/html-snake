@@ -8,12 +8,15 @@ const RESOLUTION = 20;
 const CANVAS_WIDTH = 20;
 const CANVAS_HEIGHT = 20;
 const SNAKE_START_PLACEMENT_THRESHOLD = 5;
+const GAME_SPEED = 100;
 
 const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const context = canvas.getContext('2d')!;
 const startGameButton = document.getElementById('start-game-button') as HTMLButtonElement;
 
-let snake: Coordinate[] = [];
+let snakeBody: Coordinate[] = [];
+let snakeHead: Coordinate;
+let snakeLength: number = 1;
 let appleX = 0;
 let appleY = 0;
 let direction: Direction = 'RIGHT';
@@ -28,12 +31,9 @@ function clearCanvas() {
 }
 
 function drawSnake() {
-  for (let snakePart of snake) {
-    context.beginPath();
-    context.rect(snakePart.x * RESOLUTION, snakePart.y * RESOLUTION, RESOLUTION, RESOLUTION);
+  for (let snakePart of snakeBody) {
     context.fillStyle = 'green';
-    context.fill();
-    context.closePath();
+    context.fillRect(snakePart.x * RESOLUTION, snakePart.y * RESOLUTION, RESOLUTION - 2, RESOLUTION - 2);
   }
 }
 
@@ -46,17 +46,12 @@ function drawApple() {
 }
 
 function moveSnake() {
-  let previousPartCoordinate: Coordinate;
-  snake.forEach((snakePart: Coordinate, index: number) => {
-    if (index === 0) {
-      previousPartCoordinate = new Coordinate(snakePart.x, snakePart.y);
-      snakePart.move(direction);
-    } else {
-      const prevPart = new Coordinate(snakePart.x, snakePart.y);
-      snakePart.moveTo(previousPartCoordinate.x, previousPartCoordinate.y);
-      previousPartCoordinate = prevPart;
-    }
-  });
+  snakeHead.move(direction);
+  snakeBody.push(new Coordinate(snakeHead.x, snakeHead.y));
+
+  while (snakeBody.length > snakeLength) {
+    snakeBody.shift();
+  }
 }
 
 function placeApple() {
@@ -65,25 +60,24 @@ function placeApple() {
   while (isSnakePart) {
     appleX = randomIntFromInterval(0, CANVAS_WIDTH - 1);
     appleY = randomIntFromInterval(0, CANVAS_HEIGHT - 1);
-    isSnakePart = snake.some((snakePart: Coordinate) => snakePart.x === appleX && snakePart.y === appleY);
+    isSnakePart = snakeBody.some((snakePart: Coordinate) => snakePart.x === appleX && snakePart.y === appleY);
   }
 }
 
 function placeSnake() {
-  snake = [];
-  snake.push(
-    new Coordinate(
-      randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, CANVAS_WIDTH - 1 - SNAKE_START_PLACEMENT_THRESHOLD),
-      randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, CANVAS_HEIGHT - 1 - SNAKE_START_PLACEMENT_THRESHOLD)
-    )
+  snakeBody = [];
+  snakeLength = 1;
+  snakeHead = new Coordinate(
+    randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, CANVAS_WIDTH - 1 - SNAKE_START_PLACEMENT_THRESHOLD),
+    randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, CANVAS_HEIGHT - 1 - SNAKE_START_PLACEMENT_THRESHOLD)
   );
+  snakeBody.push(snakeHead);
 }
 
 function checkGameOver() {
-  const isBorderCollision = snake[0].x >= CANVAS_WIDTH || snake[0].x < 0 || snake[0].y >= CANVAS_HEIGHT || snake[0].y < 0;
-  const isSelfCollision = snake.find(
-    (snakePart: Coordinate, index: number) => index !== 0 && snakePart.x === snake[0].x && snakePart.y === snake[0].y
-  );
+  const isBorderCollision = snakeHead.x >= CANVAS_WIDTH || snakeHead.x < 0 || snakeHead.y >= CANVAS_HEIGHT || snakeHead.y < 0;
+  const isSelfCollision =
+    snakeBody.filter((snakePart: Coordinate) => snakePart.x === snakeHead.x && snakePart.y === snakeHead.y).length === 2;
 
   if ((isBorderCollision || isSelfCollision) && gameIntervalId) {
     clearInterval(gameIntervalId);
@@ -92,34 +86,12 @@ function checkGameOver() {
 }
 
 function checkAppleEating() {
-  const isAppleEaten = snake[0].x === appleX && snake[0].y === appleY;
+  const isAppleEaten = snakeHead.x === appleX && snakeHead.y === appleY;
 
   if (isAppleEaten) {
-    const lastSnakePart = snake[snake.length - 1];
-    const penultimateSnakePart = snake[snake.length - 2];
-    const newPart = new Coordinate(lastSnakePart.x, lastSnakePart.y);
-
-    if (!penultimateSnakePart) {
-      newPart.move(OPPOSITE_DIRECTION[direction]);
-      snake.push(newPart);
-    } else {
-      newPart.move(OPPOSITE_DIRECTION[getDirectionOfSiblingParts(lastSnakePart, penultimateSnakePart)]);
-      snake.push(newPart);
-    }
+    snakeLength++;
 
     placeApple();
-  }
-}
-
-function getDirectionOfSiblingParts(firstPart: Coordinate, secondPart: Coordinate): Direction {
-  if (firstPart.x > secondPart.x) {
-    return 'RIGHT';
-  } else if (firstPart.x < secondPart.x) {
-    return 'LEFT';
-  } else if (firstPart.y > secondPart.y) {
-    return 'DOWN';
-  } else {
-    return 'UP';
   }
 }
 
@@ -140,7 +112,7 @@ function startGame() {
   placeSnake();
   placeApple();
   draw();
-  gameIntervalId = setInterval(() => draw(), 150);
+  gameIntervalId = setInterval(() => draw(), GAME_SPEED);
 }
 
 startGameButton.addEventListener('click', function () {
