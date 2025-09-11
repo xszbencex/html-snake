@@ -4,13 +4,44 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <title>HTML Snake</title>
   </head>
   <body>
     <div class="page-wrapper">
       <div class="game-wrapper">
+        <div id="ingame-top-bar" class="ingame-top-bar">
+          <h3>Score: <span id="current-score">0</span></h3>
+          <div>
+            <button id="pause-game-button" class="icon-button">
+              <img src="/assets/pause-icon.png" class="icon-image" alt="pause-icon" />
+            </button>
+            <button id="continue-game-button" class="icon-button">
+              <img src="/assets/play-icon.png" class="icon-image" alt="play-icon" />
+            </button>
+            <button id="end-game-button" class="icon-button">
+              <img src="/assets/close-icon.png" class="icon-image" alt="stop-icon" />
+            </button>
+          </div>
+        </div>
+
         <canvas id="game-canvas"></canvas>
-        <button id="start-game-button">Start Game</button>
+
+        <div class="canvas-overlay">
+          <div class="canvas-overlay-content">
+            <div id="start-game-overlay" class="overlay-switcher">
+              <h1 class="game-title">HTML SNAKE GAME</h1>
+              <img src="/assets/keyboard-arrows-pixel-art.png" width="156" height="104" class="arrow-keys-image" alt="Keyboard arrows" />
+              <h2>Use arrow keys to move the snake</h2>
+            </div>
+
+            <div id="game-over-overlay" class="overlay-switcher">
+              <h1 class="game-title">GAME OVER</h1>
+              <h2 class="score">Your score: <span id="final-score">0</span></h2>
+              <button id="restart-game-button" class="text-button">RESTART</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
