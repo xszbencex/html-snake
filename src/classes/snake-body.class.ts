@@ -21,4 +21,8 @@ export class SnakeBody {
   move(direction: Direction) {
     this.coordinates.move(direction);
   }
+
+  moveWithWallWalkthrough(direction: Direction, maxWidth: number, maxHeight: number) {
+    this.coordinates.moveWithWallWalkthrough(direction, maxWidth, maxHeight);
+  }
 }

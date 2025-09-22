@@ -5,45 +5,86 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link href="src/style.css" rel="stylesheet" />
+    <script type="module" src="/src/main.ts"></script>
     <title>HTML Snake</title>
   </head>
   <body>
-    <div class="page-wrapper">
-      <div class="game-wrapper">
-        <div id="ingame-top-bar" class="ingame-top-bar">
-          <h3>Score: <span id="current-score">0</span></h3>
-          <div>
-            <button id="pause-game-button" class="icon-button">
-              <img src="/assets/pause-icon.png" class="icon-image" alt="pause-icon" />
-            </button>
-            <button id="continue-game-button" class="icon-button">
-              <img src="/assets/play-icon.png" class="icon-image" alt="play-icon" />
-            </button>
-            <button id="end-game-button" class="icon-button">
-              <img src="/assets/close-icon.png" class="icon-image" alt="stop-icon" />
-            </button>
-          </div>
-        </div>
+    <div class="container">
+      <div id="page-wrapper" class="page-wrapper">
+        <div id="game-wrapper" class="game-wrapper">
+          <div class="canvas-overlay">
+            <div class="canvas-overlay-content">
+              <div id="start-game-overlay" class="overlay-switcher">
+                <h1>HTML SNAKE GAME</h1>
+                <button id="settings-button" class="text-button">SETTINGS</button>
+                <img src="/keyboard-arrows-pixel-art.png" class="arrow-keys-image" alt="Keyboard arrows" />
+                <h2>Use arrow keys to move the snake</h2>
+              </div>
 
-        <canvas id="game-canvas"></canvas>
+              <div id="settings-overlay" class="overlay-switcher">
+                <h1>SETTINGS</h1>
+                <div>
+                  <label class="input-label" for="speed-range">SPEED:</label>
+                  <input type="range" id="speed-range" name="speed-range" min="5" max="15" step="1" value="10" class="range-input" />
+                </div>
 
-        <div class="canvas-overlay">
-          <div class="canvas-overlay-content">
-            <div id="start-game-overlay" class="overlay-switcher">
-              <h1 class="game-title">HTML SNAKE GAME</h1>
-              <img src="/assets/keyboard-arrows-pixel-art.png" width="156" height="104" class="arrow-keys-image" alt="Keyboard arrows" />
-              <h2>Use arrow keys to move the snake</h2>
+                <div>
+                  <label class="input-label" for="map-size-range">MAP SIZE:</label>
+                  <input type="range" id="map-size-range" name="map-size-range" step="1" class="range-input" />
+                </div>
+
+                <div>
+                  <label class="input-label" for="music-volume-range">VOLUME:</label>
+                  <input type="range" id="music-volume-range" name="music-volume-range" step="0.01" min="0" max="1" class="range-input" />
+                </div>
+
+                <div>
+                  <label class="input-label" for="walls-checkbox">CAN GO THROUGH WALLS:</label>
+                  <input type="checkbox" id="walls-checkbox" name="walls-checkbox" class="checkbox" />
+                </div>
+
+                <button id="restore-defaults-button" class="text-button">RESTORE DEFAULTS</button>
+
+                <button id="back-button" class="text-button">BACK</button>
+              </div>
+
+              <div id="game-paused-overlay" class="overlay-switcher">
+                <h1>PAUSED</h1>
+              </div>
+
+              <div id="game-over-overlay" class="overlay-switcher">
+                <h1>GAME OVER</h1>
+
+                <h2 class="score">Your score: <span id="final-score">0</span></h2>
+
+                <button id="restart-game-button" class="text-button">RESTART</button>
+              </div>
             </div>
+          </div>
 
-            <div id="game-over-overlay" class="overlay-switcher">
-              <h1 class="game-title">GAME OVER</h1>
-              <h2 class="score">Your score: <span id="final-score">0</span></h2>
-              <button id="restart-game-button" class="text-button">RESTART</button>
+          <div id="ingame-top-bar" class="overlay-switcher">
+            <div class="ingame-top-bar">
+              <h3>Score: <span id="current-score">0</span></h3>
+              <div>
+                <button id="pause-game-button" class="icon-button">
+                  <img src="/pause-icon.png" class="icon-image" alt="pause-icon" />
+                </button>
+
+                <button id="continue-game-button" class="icon-button">
+                  <img src="/play-icon.png" class="icon-image" alt="play-icon" />
+                </button>
+
+                <button id="end-game-button" class="icon-button">
+                  <img src="/close-icon.png" class="icon-image" alt="stop-icon" />
+                </button>
+              </div>
             </div>
           </div>
+
+          <canvas id="game-canvas"></canvas>
         </div>
       </div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
