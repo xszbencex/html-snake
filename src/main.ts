@@ -331,11 +331,11 @@ function initializeGame() {
 async function preloadAssets(): Promise<void> {
   backgroundMusic = await loadAudio('/background-music.mp3');
   gameOverSound = await loadAudio('/game-over-sound.mp3');
-  appleImage = await loadImage('/apple__padding.png');
-  snakeBodyImage = await loadImage('/snake-body-long.png');
-  snakeBodyCornerImage = await loadImage('/snake-body-corner-long.png');
-  snakeHeadImage = await loadImage('/snake-head-long.png');
-  snakeTailImage = await loadImage('/snake-tail-very-long.png');
+  appleImage = await loadImage('/apple.png');
+  snakeBodyImage = await loadImage('/snake-body.png');
+  snakeBodyCornerImage = await loadImage('/snake-body-corner.png');
+  snakeHeadImage = await loadImage('/snake-head.png');
+  snakeTailImage = await loadImage('/snake-tail.png');
 
   backgroundMusic.loop = true;
   backgroundMusic.volume = gameSettings.volume;
