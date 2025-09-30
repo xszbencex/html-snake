@@ -25,9 +25,9 @@ export class GameSettings {
   private volumeRangeInput = document.getElementById('music-volume-range') as HTMLInputElement;
 
   constructor() {
-    this._speed = Number(localStorage.getItem(SPEED_LOCALSTORAGE_KEY)) || DEFAULT_SPEED;
-    this._mapSize = Number(localStorage.getItem(MAP_SIZE_LOCALSTORAGE_KEY)) || DEFAULT_MAP_SIZE;
-    this._volume = Number(localStorage.getItem(MUSIC_VOLUME_LOCALSTORAGE_KEY)) || DEFAULT_VOLUME;
+    this._speed = Number(localStorage.getItem(SPEED_LOCALSTORAGE_KEY)) ?? DEFAULT_SPEED;
+    this._mapSize = Number(localStorage.getItem(MAP_SIZE_LOCALSTORAGE_KEY)) ?? DEFAULT_MAP_SIZE;
+    this._volume = Number(localStorage.getItem(MUSIC_VOLUME_LOCALSTORAGE_KEY)) ?? DEFAULT_VOLUME;
     this._canGoThroughWalls = localStorage.getItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY) === 'true' || DEFAULT_CAN_GO_THROUGH_WALLS;
   }
 

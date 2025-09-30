@@ -56,8 +56,10 @@
               <div id="game-over-overlay" class="overlay-switcher">
                 <h1>GAME OVER</h1>
 
-                <h2 class="score">Your score: <span id="final-score">0</span></h2>
-
+                <div class="final-score-container">
+                  <h2 class="score">Your score: <span id="final-score">0</span></h2>
+                  <h2 class="score"><img src="/apple.png" class="apple-count-image" />:<span id="final-apple-count">0</span></h4>
+                </div>
                 <button id="restart-game-button" class="text-button">RESTART</button>
               </div>
             </div>
@@ -65,7 +67,8 @@
 
           <div id="ingame-top-bar" class="overlay-switcher">
             <div class="ingame-top-bar">
-              <h3>Score: <span id="current-score">0</span></h3>
+              <h4>Score: <span id="current-score">0</span></h4>
+              <h4><img src="/apple.png" class="apple-count-image" />:<span id="apple-count">0</span></h4>
               <div>
                 <button id="pause-game-button" class="icon-button">
                   <img src="/pause-icon.png" class="icon-image" alt="pause-icon" />

@@ -1,8 +1,14 @@
+import { Apple } from './classes/apple.class';
 import { Coordinate } from './classes/coordinate.class';
 import { GameSettings } from './classes/game-settings.class';
 import { SnakeBody } from './classes/snake-body.class';
 import { DIRECTION_KEYS, DIRECTION_ROTATION, OPPOSITE_DIRECTION } from './constants/direction.constant';
-import { RESOLUTION, SNAKE_START_PLACEMENT_THRESHOLD } from './constants/settings.constants';
+import {
+  DEFAULT_SNAKE_LENGTH,
+  EVERY_SPECIAL_APPLE_COUNT,
+  RESOLUTION,
+  SNAKE_START_PLACEMENT_THRESHOLD,
+} from './constants/settings.constants';
 import { isDirectionKey } from './typeguards/direction-key.typeguard';
 import { Direction } from './types/direction.type';
 import { loadAudio, loadImage } from './utils/load-assets.utils';
@@ -23,9 +29,10 @@ const continueGameButton = document.getElementById('continue-game-button') as HT
 const settingsButton = document.getElementById('settings-button') as HTMLButtonElement;
 const backButton = document.getElementById('back-button') as HTMLButtonElement;
 const finalScoreText = document.getElementById('final-score') as HTMLSpanElement;
+const finalAppleCountText = document.getElementById('final-apple-count') as HTMLSpanElement;
 const currentScoreText = document.getElementById('current-score') as HTMLSpanElement;
+const appleCountText = document.getElementById('apple-count') as HTMLSpanElement;
 const context = canvas.getContext('2d')!;
-context.imageSmoothingEnabled = false;
 
 const gameSettings = new GameSettings();
 
@@ -40,12 +47,14 @@ let snakeTailImage: HTMLImageElement;
 
 let snake: SnakeBody[] = [];
 let snakeHead: SnakeBody;
-let apple: Coordinate;
+let apple: Apple;
 let direction: Direction = 'RIGHT';
 let score: number = 0;
+let appleCount: number = 0;
 let lastDirectionOnDraw: Direction = 'RIGHT';
 
 let gameIntervalId: number = NaN;
+let lastPaintTime = 0;
 
 function resizeCanvas() {
   const smallerSide = Math.min(pageWrapper.clientWidth, pageWrapper.clientHeight);
@@ -119,8 +128,12 @@ function getCornerRotation(currentDirection: Direction, previousPartDirection: D
   return 0;
 }
 
-function drawApple() {
-  context.drawImage(appleImage, apple.x * RESOLUTION, apple.y * RESOLUTION, RESOLUTION, RESOLUTION);
+function drawApple(deltaTime: number = 0) {
+  apple.animate(deltaTime);
+  const size = RESOLUTION * apple.scale;
+  const offset = (RESOLUTION - size) / 2;
+
+  context.drawImage(appleImage, apple.x * RESOLUTION + offset, apple.y * RESOLUTION + offset, size, size);
 }
 
 function moveSnake() {
@@ -140,9 +153,13 @@ function moveSnake() {
 
 function placeApple() {
   let isSnakePart = true;
+  const isNextAppleSpecial = (appleCount + 1) % EVERY_SPECIAL_APPLE_COUNT === 0;
 
   while (isSnakePart) {
-    apple = new Coordinate(randomIntFromInterval(0, gameSettings.mapSize - 1), randomIntFromInterval(0, gameSettings.mapSize - 1));
+    apple = new Apple(
+      new Coordinate(randomIntFromInterval(0, gameSettings.mapSize - 1), randomIntFromInterval(0, gameSettings.mapSize - 1)),
+      isNextAppleSpecial
+    );
 
     isSnakePart = snake.some((snakePart: SnakeBody) => snakePart.x === apple.x && snakePart.y === apple.y);
   }
@@ -158,8 +175,9 @@ function placeSnake() {
     direction
   );
   snake.push(snakeHead);
-  snake.push(new SnakeBody(new Coordinate(snakeHead.x - 1, snakeHead.y), direction));
-  snake.push(new SnakeBody(new Coordinate(snakeHead.x - 2, snakeHead.y), direction));
+  for (let i = 1; i < DEFAULT_SNAKE_LENGTH; i++) {
+    snake.push(new SnakeBody(new Coordinate(snakeHead.x - i, snakeHead.y), direction));
+  }
 }
 
 function checkGameOver() {
@@ -175,12 +193,40 @@ function checkGameOver() {
   return false;
 }
 
+function checkCollision(): boolean {
+  const size = RESOLUTION * apple.scale;
+  const offset = (RESOLUTION - size) / 2;
+
+  const appleRect = {
+    x: apple.x * RESOLUTION + offset,
+    y: apple.y * RESOLUTION + offset,
+    w: size,
+    h: size,
+  };
+
+  const headRect = {
+    x: snakeHead.x * RESOLUTION,
+    y: snakeHead.y * RESOLUTION,
+    w: RESOLUTION,
+    h: RESOLUTION,
+  };
+
+  return !(
+    headRect.x + headRect.w < appleRect.x ||
+    headRect.x > appleRect.x + appleRect.w ||
+    headRect.y + headRect.h < appleRect.y ||
+    headRect.y > appleRect.y + appleRect.h
+  );
+}
+
 function checkAppleEating(): boolean {
-  const isAppleEaten = snakeHead.x === apple.x && snakeHead.y === apple.y;
+  const isAppleEaten = checkCollision();
 
   if (isAppleEaten) {
-    score = score + 1 * gameSettings.speed;
+    score = Math.floor(score + gameSettings.speed * Math.pow(apple.baseScale, 2));
+    ++appleCount;
     currentScoreText.textContent = score.toString();
+    appleCountText.textContent = appleCount.toString();
 
     placeApple();
 
@@ -190,30 +236,36 @@ function checkAppleEating(): boolean {
   return false;
 }
 
-let lastPaintTime = 0;
-
-function draw(ctime: number) {
+function draw(timestamp: number) {
   gameIntervalId = window.requestAnimationFrame(draw);
-  if ((ctime - lastPaintTime) / 1000 < 1 / gameSettings.speed) {
+  const deltaTime = timestamp - lastPaintTime;
+  clearCanvas();
+  drawBackgroundGrid();
+  drawApple(deltaTime);
+  drawSnake();
+
+  if (deltaTime / 1000 < 1 / gameSettings.speed) {
     return;
   }
-  lastPaintTime = ctime;
+  lastPaintTime = timestamp;
   lastDirectionOnDraw = direction;
+
+  const isAppleEaten = appleCount + DEFAULT_SNAKE_LENGTH > snake.length;
+  if (isAppleEaten) {
+    snake.push(new SnakeBody(new Coordinate(0, 0), direction));
+  }
 
   moveSnake();
 
-  const isAppleEaten = checkAppleEating();
+  checkAppleEating();
+
   const isGameOver = checkGameOver();
 
-  if (isGameOver) return;
-
-  clearCanvas();
-  drawBackgroundGrid();
-  drawApple();
-  drawSnake();
-
-  if (isAppleEaten) {
-    snake.push(new SnakeBody(new Coordinate(0, 0), direction));
+  if (isGameOver) {
+    clearCanvas();
+    drawBackgroundGrid();
+    drawApple(deltaTime);
+    drawSnake();
   }
 }
 
@@ -233,6 +285,7 @@ function endGame() {
   gameIntervalId = NaN;
   switchOverlay([gameOverOverlay]);
   finalScoreText.textContent = score.toString();
+  finalAppleCountText.textContent = appleCount.toString();
   document.removeEventListener('keydown', keyDownHandler);
   restartGameButton.addEventListener('click', () => initializeGame(), { once: true });
 }
@@ -310,7 +363,9 @@ function initializeGame() {
   canvas.height = gameSettings.mapSize * RESOLUTION;
   switchOverlay([startGameOverlay]);
   score = 0;
+  appleCount = 0;
   currentScoreText.textContent = score.toString();
+  appleCountText.textContent = appleCount.toString();
   direction = 'RIGHT';
   lastDirectionOnDraw = 'RIGHT';
   clearCanvas();
