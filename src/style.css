@@ -4,6 +4,7 @@
   color: white;
   line-height: 1.5;
   font-weight: 400;
+  text-shadow: 1px 2px 0 black;
 
   color-scheme: light dark;
   background-color: #3d550c;
@@ -17,6 +18,10 @@
 * {
   padding: 0;
   margin: 0;
+}
+
+img {
+  filter: drop-shadow(1px 2px 0 black);
 }
 
 body {
@@ -106,6 +111,7 @@ h2 {
   border: none;
   padding: 0.5em;
   cursor: pointer;
+  text-shadow: inherit;
 }
 
 .text-button {
@@ -175,4 +181,8 @@ h2 {
 .apple-count-image {
   width: 1.5em;
   height: 1.5em;
+}
+
+.hint-container {
+  font-size: 12px;
 }

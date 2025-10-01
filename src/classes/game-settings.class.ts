@@ -31,12 +31,12 @@ export class GameSettings {
     this._canGoThroughWalls = localStorage.getItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY) === 'true' || DEFAULT_CAN_GO_THROUGH_WALLS;
   }
 
-  listenOnInputChanges(onCanvasResize: () => void, onVolumeChange: () => void): void {
+  listenOnInputChanges(onMapResize: () => void, onVolumeChange: () => void): void {
     this.listenOnSpeedChange();
-    this.listenOnMapSizeChange(onCanvasResize);
+    this.listenOnMapSizeChange(onMapResize);
     this.listenOnCanGoThroughWallsChange();
     this.listenVolumeChange(onVolumeChange);
-    this.listenOnRestoreDefaultsButtonClick(onCanvasResize, onVolumeChange);
+    this.listenOnRestoreDefaultsButtonClick(onMapResize, onVolumeChange);
   }
 
   private listenOnSpeedChange(): void {
@@ -49,14 +49,14 @@ export class GameSettings {
     });
   }
 
-  private listenOnMapSizeChange(onCanvasResize: () => void): void {
+  private listenOnMapSizeChange(onMapResize: () => void): void {
     this.mapSizeRangeInput.value = this.mapSize.toString();
     this.mapSizeRangeInput.min = MIN_MAP_SIZE.toString();
     this.mapSizeRangeInput.max = MAX_MAP_SIZE.toString();
 
     this.mapSizeRangeInput.addEventListener('change', (e: Event) => {
       this.mapSize = Number((e.target as HTMLInputElement).value);
-      onCanvasResize();
+      onMapResize();
     });
   }
 

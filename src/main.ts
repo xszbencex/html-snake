@@ -1,18 +1,14 @@
-import { Apple } from './classes/apple.class';
+import { AudioHandler } from './classes/audio-handler.class';
+import { CanvasHandler } from './classes/canvas-handler.class';
 import { Coordinate } from './classes/coordinate.class';
 import { GameSettings } from './classes/game-settings.class';
+import { ObjectHandler } from './classes/object-handler.class';
+import { ScoreHandler } from './classes/score-handler.class';
 import { SnakeBody } from './classes/snake-body.class';
-import { DIRECTION_KEYS, DIRECTION_ROTATION, OPPOSITE_DIRECTION } from './constants/direction.constant';
-import {
-  DEFAULT_SNAKE_LENGTH,
-  EVERY_SPECIAL_APPLE_COUNT,
-  RESOLUTION,
-  SNAKE_START_PLACEMENT_THRESHOLD,
-} from './constants/settings.constants';
+import { DIRECTION_KEYS, OPPOSITE_DIRECTION } from './constants/direction.constant';
+import { DEFAULT_SNAKE_LENGTH, RESOLUTION } from './constants/settings.constants';
 import { isDirectionKey } from './typeguards/direction-key.typeguard';
 import { Direction } from './types/direction.type';
-import { loadAudio, loadImage } from './utils/load-assets.utils';
-import { randomIntFromInterval } from './utils/random.util';
 
 const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const gameWrapper = document.getElementById('game-wrapper') as HTMLDivElement;
@@ -30,264 +26,52 @@ const settingsButton = document.getElementById('settings-button') as HTMLButtonE
 const backButton = document.getElementById('back-button') as HTMLButtonElement;
 const finalScoreText = document.getElementById('final-score') as HTMLSpanElement;
 const finalAppleCountText = document.getElementById('final-apple-count') as HTMLSpanElement;
-const currentScoreText = document.getElementById('current-score') as HTMLSpanElement;
-const appleCountText = document.getElementById('apple-count') as HTMLSpanElement;
-const context = canvas.getContext('2d')!;
 
-const gameSettings = new GameSettings();
-
-let backgroundMusic: HTMLAudioElement;
-let gameOverSound: HTMLAudioElement;
-
-let appleImage: HTMLImageElement;
-let snakeBodyImage: HTMLImageElement;
-let snakeBodyCornerImage: HTMLImageElement;
-let snakeHeadImage: HTMLImageElement;
-let snakeTailImage: HTMLImageElement;
-
-let snake: SnakeBody[] = [];
-let snakeHead: SnakeBody;
-let apple: Apple;
 let direction: Direction = 'RIGHT';
-let score: number = 0;
-let appleCount: number = 0;
 let lastDirectionOnDraw: Direction = 'RIGHT';
 
 let gameIntervalId: number = NaN;
-let lastPaintTime = 0;
+let lastDrawTime = 0;
 
-function resizeCanvas() {
-  const smallerSide = Math.min(pageWrapper.clientWidth, pageWrapper.clientHeight);
-  gameWrapper.style.maxWidth = `${smallerSide}px`;
-  gameWrapper.style.maxHeight = `${smallerSide}px`;
-}
-
-function clearCanvas() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawBackgroundGrid() {
-  for (let x = 0; x < gameSettings.mapSize; x++) {
-    for (let y = 0; y < gameSettings.mapSize; y++) {
-      context.fillStyle = (x + y) % 2 ? '#82b62225' : '#ecf87f1b';
-      context.fillRect(x * RESOLUTION, y * RESOLUTION, RESOLUTION, RESOLUTION);
-    }
-  }
-}
-
-function drawSnake() {
-  snake.forEach((snakePart: SnakeBody, index: number) => {
-    if (index === 0) {
-      drawTransformedImage(snakeHeadImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
-    } else if (index === snake.length - 1) {
-      drawTransformedImage(snakeTailImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
-    } else {
-      const previousPart = snake[index + 1];
-      const nextPart = snake[index - 1];
-
-      const isStraightHorizontal = previousPart.y === snakePart.y && nextPart.y === snakePart.y;
-      const isStraightVertical = previousPart.x === snakePart.x && nextPart.x === snakePart.x;
-
-      if (isStraightHorizontal || isStraightVertical) {
-        drawTransformedImage(snakeBodyImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
-      } else {
-        drawTransformedImage(snakeBodyCornerImage, snakePart, getCornerRotation(snakePart.direction!, previousPart.direction!));
-      }
-    }
-  });
-}
-
-function drawTransformedImage(image: HTMLImageElement, snakePart: SnakeBody, rotation: number) {
-  const x = snakePart.x * RESOLUTION;
-  const y = snakePart.y * RESOLUTION;
-  const width = RESOLUTION;
-  const height = RESOLUTION;
-
-  const cx = x + width / 2;
-  const cy = y + height / 2;
-
-  context.save();
-
-  context.translate(cx, cy);
-
-  if (rotation) context.rotate(rotation);
-
-  context.drawImage(image, -width / 2, -height / 2, width, height);
-
-  context.restore();
-}
-
-function getCornerRotation(currentDirection: Direction, previousPartDirection: Direction): number {
-  if (currentDirection === 'DOWN' && previousPartDirection === 'LEFT') return Math.PI / 2;
-  if (currentDirection === 'RIGHT' && previousPartDirection === 'UP') return Math.PI / 2;
-  if (currentDirection === 'DOWN' && previousPartDirection === 'RIGHT') return Math.PI;
-  if (currentDirection === 'LEFT' && previousPartDirection === 'UP') return Math.PI;
-  if (currentDirection === 'UP' && previousPartDirection === 'RIGHT') return (3 * Math.PI) / 2;
-  if (currentDirection === 'LEFT' && previousPartDirection === 'DOWN') return (3 * Math.PI) / 2;
-
-  return 0;
-}
-
-function drawApple(deltaTime: number = 0) {
-  apple.animate(deltaTime);
-  const size = RESOLUTION * apple.scale;
-  const offset = (RESOLUTION - size) / 2;
-
-  context.drawImage(appleImage, apple.x * RESOLUTION + offset, apple.y * RESOLUTION + offset, size, size);
-}
-
-function moveSnake() {
-  snakeHead.direction = direction;
-  for (let i = snake.length - 1; i > 0; i--) {
-    const currentPart = snake[i];
-    currentPart.coordinates.x = snake[i - 1].coordinates.x;
-    currentPart.coordinates.y = snake[i - 1].coordinates.y;
-    currentPart.direction = snake[i - 1].direction;
-  }
-  if (gameSettings.canGoThroughWalls) {
-    snakeHead.moveWithWallWalkthrough(direction, gameSettings.mapSize, gameSettings.mapSize);
-  } else {
-    snakeHead.move(direction);
-  }
-}
-
-function placeApple() {
-  let isSnakePart = true;
-  const isNextAppleSpecial = (appleCount + 1) % EVERY_SPECIAL_APPLE_COUNT === 0;
-
-  while (isSnakePart) {
-    apple = new Apple(
-      new Coordinate(randomIntFromInterval(0, gameSettings.mapSize - 1), randomIntFromInterval(0, gameSettings.mapSize - 1)),
-      isNextAppleSpecial
-    );
-
-    isSnakePart = snake.some((snakePart: SnakeBody) => snakePart.x === apple.x && snakePart.y === apple.y);
-  }
-}
-
-function placeSnake() {
-  snake = [];
-  snakeHead = new SnakeBody(
-    new Coordinate(
-      randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, gameSettings.mapSize - 1 - SNAKE_START_PLACEMENT_THRESHOLD),
-      randomIntFromInterval(SNAKE_START_PLACEMENT_THRESHOLD, gameSettings.mapSize - 1 - SNAKE_START_PLACEMENT_THRESHOLD)
-    ),
-    direction
-  );
-  snake.push(snakeHead);
-  for (let i = 1; i < DEFAULT_SNAKE_LENGTH; i++) {
-    snake.push(new SnakeBody(new Coordinate(snakeHead.x - i, snakeHead.y), direction));
-  }
-}
-
-function checkGameOver() {
-  const isBorderCollision =
-    snakeHead.x >= gameSettings.mapSize || snakeHead.x < 0 || snakeHead.y >= gameSettings.mapSize || snakeHead.y < 0;
-  const isSelfCollision = snake.filter((snakePart: SnakeBody) => snakePart.x === snakeHead.x && snakePart.y === snakeHead.y).length === 2;
-
-  if (((!gameSettings.canGoThroughWalls && isBorderCollision) || isSelfCollision) && !isNaN(gameIntervalId)) {
-    endGame();
-    return true;
-  }
-
-  return false;
-}
-
-function checkCollision(): boolean {
-  const size = RESOLUTION * apple.scale;
-  const offset = (RESOLUTION - size) / 2;
-
-  const appleRect = {
-    x: apple.x * RESOLUTION + offset,
-    y: apple.y * RESOLUTION + offset,
-    w: size,
-    h: size,
-  };
-
-  const headRect = {
-    x: snakeHead.x * RESOLUTION,
-    y: snakeHead.y * RESOLUTION,
-    w: RESOLUTION,
-    h: RESOLUTION,
-  };
-
-  return !(
-    headRect.x + headRect.w < appleRect.x ||
-    headRect.x > appleRect.x + appleRect.w ||
-    headRect.y + headRect.h < appleRect.y ||
-    headRect.y > appleRect.y + appleRect.h
-  );
-}
-
-function checkAppleEating(): boolean {
-  const isAppleEaten = checkCollision();
-
-  if (isAppleEaten) {
-    score = Math.floor(score + gameSettings.speed * Math.pow(apple.baseScale, 2));
-    ++appleCount;
-    currentScoreText.textContent = score.toString();
-    appleCountText.textContent = appleCount.toString();
-
-    placeApple();
-
-    return true;
-  }
-
-  return false;
+function redrawCanvas(deltaTime?: number) {
+  canvasHandler.clearCanvas();
+  canvasHandler.drawBackgroundGrid(gameSettings.mapSize);
+  canvasHandler.drawApple(objectHandler.apple, deltaTime);
+  canvasHandler.drawSnake(objectHandler.snake);
 }
 
 function draw(timestamp: number) {
   gameIntervalId = window.requestAnimationFrame(draw);
-  const deltaTime = timestamp - lastPaintTime;
-  clearCanvas();
-  drawBackgroundGrid();
-  drawApple(deltaTime);
-  drawSnake();
+  const deltaTime = timestamp - lastDrawTime;
+  redrawCanvas(deltaTime);
 
   if (deltaTime / 1000 < 1 / gameSettings.speed) {
     return;
   }
-  lastPaintTime = timestamp;
+
+  lastDrawTime = timestamp;
   lastDirectionOnDraw = direction;
 
-  const isAppleEaten = appleCount + DEFAULT_SNAKE_LENGTH > snake.length;
-  if (isAppleEaten) {
-    snake.push(new SnakeBody(new Coordinate(0, 0), direction));
+  const shouldIncreaseSnakeAfterAppleEaten = scoreHandler.appleCount + DEFAULT_SNAKE_LENGTH > objectHandler.snake.length;
+  if (shouldIncreaseSnakeAfterAppleEaten) {
+    objectHandler.snake.push(new SnakeBody(new Coordinate(0, 0), direction));
   }
 
-  moveSnake();
+  objectHandler.moveSnake(direction);
 
-  checkAppleEating();
+  const isAppleEaten = objectHandler.checkAppleEating();
 
-  const isGameOver = checkGameOver();
+  if (isAppleEaten) {
+    scoreHandler.increaseScore(gameSettings.speed, objectHandler.apple.baseScale);
+    objectHandler.placeApple(scoreHandler.isNextAppleSpecial());
+  }
+
+  const isGameOver = objectHandler.checkSnakeCollision();
 
   if (isGameOver) {
-    clearCanvas();
-    drawBackgroundGrid();
-    drawApple(deltaTime);
-    drawSnake();
+    redrawCanvas();
+    endGame();
   }
-}
-
-function startGame() {
-  endGameButton.addEventListener('click', endGame);
-  pauseGameButton.addEventListener('click', pauseGame);
-  continueGameButton.style.display = 'none';
-  switchOverlay([ingameTopBar]);
-  requestAnimationFrame(draw);
-  backgroundMusic.play();
-}
-
-function endGame() {
-  backgroundMusic.pause();
-  gameOverSound.play();
-  window.cancelAnimationFrame(gameIntervalId);
-  gameIntervalId = NaN;
-  switchOverlay([gameOverOverlay]);
-  finalScoreText.textContent = score.toString();
-  finalAppleCountText.textContent = appleCount.toString();
-  document.removeEventListener('keydown', keyDownHandler);
-  restartGameButton.addEventListener('click', () => initializeGame(), { once: true });
 }
 
 function keyDownHandler(event: KeyboardEvent) {
@@ -319,28 +103,29 @@ function switchOverlay(visibleOverlays: readonly HTMLDivElement[]) {
 
 function onSettingsButtonClicked() {
   switchOverlay([settingsOverlay]);
-  gameSettings.listenOnInputChanges(onCanvasResize, onvolumechange);
+  gameSettings.listenOnInputChanges(onMapResize, () => audioHandler.setAudioVolume(gameSettings.volume));
   backButton.addEventListener('click', () => switchOverlay([startGameOverlay]), { once: true });
 }
 
-function onCanvasResize() {
-  canvas.width = gameSettings.mapSize * RESOLUTION;
-  canvas.height = gameSettings.mapSize * RESOLUTION;
-  clearCanvas();
-  placeApple();
-  placeSnake();
-  drawBackgroundGrid();
-  drawApple();
-  drawSnake();
+function onMapResize() {
+  canvasHandler.resizeCanvas(gameSettings.mapSize);
+  objectHandler.initialize(direction);
+  redrawCanvas();
 }
 
-function onvolumechange() {
-  backgroundMusic.volume = gameSettings.volume;
-  gameOverSound.volume = gameSettings.volume;
+function endGame() {
+  audioHandler.onGameEnd();
+  window.cancelAnimationFrame(gameIntervalId);
+  gameIntervalId = NaN;
+  switchOverlay([gameOverOverlay]);
+  finalScoreText.textContent = scoreHandler.score.toString();
+  finalAppleCountText.textContent = scoreHandler.appleCount.toString();
+  document.removeEventListener('keydown', keyDownHandler);
+  restartGameButton.addEventListener('click', () => initializeGame(), { once: true });
 }
 
 function pauseGame() {
-  backgroundMusic.pause();
+  audioHandler.backgroundMusic.pause();
   window.cancelAnimationFrame(gameIntervalId);
   pauseGameButton.style.display = 'none';
   continueGameButton.style.display = 'inline';
@@ -350,7 +135,7 @@ function pauseGame() {
 }
 
 function continueGame() {
-  backgroundMusic.play();
+  audioHandler.backgroundMusic.play();
   continueGameButton.style.display = 'none';
   pauseGameButton.style.display = 'inline';
   switchOverlay([ingameTopBar]);
@@ -358,49 +143,50 @@ function continueGame() {
   document.addEventListener('keydown', keyDownHandler);
 }
 
+function startGame() {
+  endGameButton.addEventListener('click', endGame);
+  pauseGameButton.addEventListener('click', pauseGame);
+  continueGameButton.style.display = 'none';
+  pauseGameButton.style.display = 'inline';
+  switchOverlay([ingameTopBar]);
+  requestAnimationFrame(draw);
+  audioHandler.backgroundMusic.play();
+}
+
 function initializeGame() {
   canvas.width = gameSettings.mapSize * RESOLUTION;
   canvas.height = gameSettings.mapSize * RESOLUTION;
   switchOverlay([startGameOverlay]);
-  score = 0;
-  appleCount = 0;
-  currentScoreText.textContent = score.toString();
-  appleCountText.textContent = appleCount.toString();
+  scoreHandler.initialize();
   direction = 'RIGHT';
   lastDirectionOnDraw = 'RIGHT';
-  clearCanvas();
-  placeSnake();
-  placeApple();
-  drawBackgroundGrid();
-  drawSnake();
-  drawApple();
+  objectHandler.initialize(direction);
+  redrawCanvas();
   document.addEventListener('keydown', keyDownHandler, false);
   document.addEventListener('keydown', startGameKeydownHandler, { once: true });
   settingsButton.addEventListener('click', onSettingsButtonClicked);
-  backgroundMusic.currentTime = 0;
-  backgroundMusic.play();
-  gameOverSound.currentTime = 0;
-  gameOverSound.pause();
+  audioHandler.onGameInit();
 }
 
-async function preloadAssets(): Promise<void> {
-  backgroundMusic = await loadAudio('/background-music.mp3');
-  gameOverSound = await loadAudio('/game-over-sound.mp3');
-  appleImage = await loadImage('/apple.png');
-  snakeBodyImage = await loadImage('/snake-body.png');
-  snakeBodyCornerImage = await loadImage('/snake-body-corner.png');
-  snakeHeadImage = await loadImage('/snake-head.png');
-  snakeTailImage = await loadImage('/snake-tail.png');
-
-  backgroundMusic.loop = true;
-  backgroundMusic.volume = gameSettings.volume;
-  gameOverSound.volume = gameSettings.volume;
+function resizeGame() {
+  const smallerSide = Math.min(pageWrapper.clientWidth, pageWrapper.clientHeight);
+  gameWrapper.style.maxWidth = `${smallerSide}px`;
+  gameWrapper.style.maxHeight = `${smallerSide}px`;
 }
 
-preloadAssets()
+const gameSettings = new GameSettings();
+const audioHandler = new AudioHandler();
+const canvasHandler = new CanvasHandler(canvas);
+const objectHandler = new ObjectHandler(direction, gameSettings);
+const scoreHandler = new ScoreHandler();
+
+Promise.all([canvasHandler.preloadImages(), audioHandler.preloadAudio()])
   .then(() => {
-    resizeCanvas();
+    audioHandler.setAudioVolume(gameSettings.volume);
+
+    resizeGame();
+    window.addEventListener('resize', resizeGame);
+
     initializeGame();
-    window.addEventListener('resize', resizeCanvas);
   })
   .catch((err) => console.error('Error while loading assets:', err));

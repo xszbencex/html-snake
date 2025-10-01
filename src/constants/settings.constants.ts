@@ -15,4 +15,5 @@ export const CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY = 'canGoThroughWalls';
 export const RESOLUTION = 50;
 export const SNAKE_START_PLACEMENT_THRESHOLD = 5;
 export const DEFAULT_SNAKE_LENGTH = 3;
-export const EVERY_SPECIAL_APPLE_COUNT = 5;
+export const EVERY_SPECIAL_APPLE_COUNT = 10;
+export const SPECIAL_APPLE_SCALE = 3;

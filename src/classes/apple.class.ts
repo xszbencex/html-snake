@@ -1,8 +1,7 @@
+import { SPECIAL_APPLE_SCALE } from '../constants/settings.constants';
 import { Coordinate } from './coordinate.class';
 
 export class Apple {
-  static SPECIAL_APPLE_SCALE = 3;
-
   coordinates: Coordinate;
   baseScale: number;
   scale: number = 1;
@@ -11,7 +10,7 @@ export class Apple {
 
   constructor(coordinates: Coordinate, isSpecial: boolean) {
     this.coordinates = coordinates;
-    this.baseScale = isSpecial ? Apple.SPECIAL_APPLE_SCALE : 1;
+    this.baseScale = isSpecial ? SPECIAL_APPLE_SCALE : 1;
   }
 
   get x(): number {

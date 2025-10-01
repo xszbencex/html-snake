@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link href="src/style.css" rel="stylesheet" />
     <script type="module" src="/src/main.ts"></script>
-    <title>HTML Snake</title>
+    <title>Snakes</title>
   </head>
   <body>
     <div class="container">
@@ -16,10 +16,15 @@
           <div class="canvas-overlay">
             <div class="canvas-overlay-content">
               <div id="start-game-overlay" class="overlay-switcher">
-                <h1>HTML SNAKE GAME</h1>
+                <h1>SNAKES</h1>
+                <button id="1-player-button" class="text-button">1 PLAYER</button>
+                <button id="2-player-pvp-button" class="text-button">2 PLAYER (PVP)</button>
+                <button id="2-player-pve-button" class="text-button">2 PLAYER (PVE)</button>
                 <button id="settings-button" class="text-button">SETTINGS</button>
-                <img src="/keyboard-arrows-pixel-art.png" class="arrow-keys-image" alt="Keyboard arrows" />
-                <h2>Use arrow keys to move the snake</h2>
+                <div class="hint-container">
+                  <img src="/keyboard-arrows-pixel-art.png" class="arrow-keys-image" alt="Keyboard arrows" />
+                  <h2>Use arrow keys to move the snake</h2>
+                </div>
               </div>
 
               <div id="settings-overlay" class="overlay-switcher">
