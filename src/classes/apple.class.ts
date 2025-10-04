@@ -30,9 +30,13 @@ export class Apple {
       this.baseScale = 1;
     }
 
-    const amplitude = this.baseScale > 1 ? 0.3 : 0.05;
+    const amplitude = this.baseScale > 1 ? 0.3 : 0.1;
     const pulse = (Math.cos(this.pulseTime) - 1) * 0.5 * amplitude;
 
     this.scale = this.baseScale + pulse;
+  }
+
+  equals(apple: Apple): boolean {
+    return apple.coordinates.x === this.coordinates.x && apple.coordinates.y === this.coordinates.y;
   }
 }

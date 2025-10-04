@@ -1,7 +1,7 @@
-import { DirectionKey } from '../types/direction-key.type';
+import { Player1Key, Player2Key } from '../types/direction-key.type';
 import { Direction } from '../types/direction.type';
 
-export const DIRECTION_KEYS: Record<Direction, readonly DirectionKey[]> = {
+export const DIRECTION_KEYS: Record<Direction, readonly [Player1Key, Player2Key]> = {
   UP: ['ArrowUp', 'w'],
   DOWN: ['ArrowDown', 's'],
   LEFT: ['ArrowLeft', 'a'],

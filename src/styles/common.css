@@ -1,0 +1,29 @@
+.text-button,
+.icon-button {
+  font-family: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  background-color: unset;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  text-shadow: inherit;
+}
+
+.text-button {
+  font-size: 1em;
+  font-family: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+}
+
+.icon-image {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.apple-count-image {
+  width: 1.5em;
+  height: 1.5em;
+}

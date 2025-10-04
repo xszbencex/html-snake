@@ -1,0 +1,20 @@
+.top-bar {
+  display: grid;
+  grid-template-columns: 6fr 3fr 6fr;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+  top: -3em;
+}
+
+.top-bar *:last-child {
+  justify-self: right;
+}
+
+.top-bar *:not(:last-child) {
+  justify-self: center;
+}
+
+.top-bar *:first-child {
+  justify-self: start;
+}

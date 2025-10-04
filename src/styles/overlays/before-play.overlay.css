@@ -1,0 +1,46 @@
+.keyboard-hint-container {
+  display: flex;
+  justify-content: space-around;
+  flex: 1;
+  align-items: center;
+  width: 100%;
+}
+
+.tick-container {
+  position: relative;
+}
+
+.tick-container.ticked .player-container {
+  opacity: 0.5;
+}
+
+.tick-container.ticked .tick-icon-image {
+  display: block;
+}
+
+.player-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+}
+
+.tick-icon-image {
+  width: 4em;
+  height: 4em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 1;
+}
+
+.arrow-keys-image {
+  width: 8em;
+}
+
+.snake-head-icon {
+  width: 4em;
+  height: 4em;
+}

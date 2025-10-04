@@ -1,0 +1,14 @@
+#final-score-container,
+#winner-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.score {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

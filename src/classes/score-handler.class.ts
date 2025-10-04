@@ -1,11 +1,11 @@
 import { EVERY_SPECIAL_APPLE_COUNT } from '../constants/settings.constants';
+import { TopBarOverlay } from './overlays/top-bar.overlay';
 
 export class ScoreHandler {
-  _score!: number;
-  _appleCount!: number;
+  private _score!: number;
+  private _appleCount!: number;
 
-  private readonly currentScoreText = document.getElementById('current-score') as HTMLSpanElement;
-  private readonly appleCountText = document.getElementById('apple-count') as HTMLSpanElement;
+  private topBarOverlay: TopBarOverlay;
 
   get score(): number {
     return this._score;
@@ -17,15 +17,16 @@ export class ScoreHandler {
 
   set score(newScore: number) {
     this._score = newScore;
-    this.currentScoreText.textContent = newScore.toString();
+    this.topBarOverlay.currentScoreText.textContent = newScore.toString();
   }
 
   set appleCount(newCount: number) {
     this._appleCount = newCount;
-    this.appleCountText.textContent = newCount.toString();
+    this.topBarOverlay.appleCountText.textContent = newCount.toString();
   }
 
-  constructor() {
+  constructor(topBarOverlay: TopBarOverlay) {
+    this.topBarOverlay = topBarOverlay;
     this.initialize();
   }
 

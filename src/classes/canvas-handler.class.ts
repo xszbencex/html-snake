@@ -4,6 +4,7 @@ import { getSnakeCornerRotation } from '../utils/canvas.utils';
 import { Apple } from './apple.class';
 import { ImageHandler } from './image-handler.class';
 import { SnakeBody } from './snake-body.class';
+import { Snake } from './snake.class';
 
 export class CanvasHandler {
   canvas: HTMLCanvasElement;
@@ -39,26 +40,27 @@ export class CanvasHandler {
     }
   }
 
-  drawSnake(snake: readonly SnakeBody[]) {
-    snake.forEach((snakePart: SnakeBody, index: number) => {
+  drawSnake(snake: Snake) {
+    snake.snakeParts.forEach((snakePart: SnakeBody, index: number, snakeParts: SnakeBody[]) => {
       if (index === 0) {
-        this.drawImageWithRotation(this.imageHandler.snakeHeadImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
-      } else if (index === snake.length - 1) {
-        this.drawImageWithRotation(this.imageHandler.snakeTailImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
+        this.drawImageWithRotation(this.imageHandler.snakeHeadImage, snakePart, DIRECTION_ROTATION[snakePart.direction!], snake.color);
+      } else if (index === snakeParts.length - 1) {
+        this.drawImageWithRotation(this.imageHandler.snakeTailImage, snakePart, DIRECTION_ROTATION[snakePart.direction!], snake.color);
       } else {
-        const previousPart = snake[index + 1];
-        const nextPart = snake[index - 1];
+        const previousPart = snakeParts[index + 1];
+        const nextPart = snakeParts[index - 1];
 
         const isStraightHorizontal = previousPart.y === snakePart.y && nextPart.y === snakePart.y;
         const isStraightVertical = previousPart.x === snakePart.x && nextPart.x === snakePart.x;
 
         if (isStraightHorizontal || isStraightVertical) {
-          this.drawImageWithRotation(this.imageHandler.snakeBodyImage, snakePart, DIRECTION_ROTATION[snakePart.direction!]);
+          this.drawImageWithRotation(this.imageHandler.snakeBodyImage, snakePart, DIRECTION_ROTATION[snakePart.direction!], snake.color);
         } else {
           this.drawImageWithRotation(
             this.imageHandler.snakeBodyCornerImage,
             snakePart,
-            getSnakeCornerRotation(snakePart.direction!, previousPart.direction!)
+            getSnakeCornerRotation(snakePart.direction!, previousPart.direction!),
+            snake.color
           );
         }
       }
@@ -73,7 +75,7 @@ export class CanvasHandler {
     this.context.drawImage(this.imageHandler.appleImage, apple.x * RESOLUTION + offset, apple.y * RESOLUTION + offset, size, size);
   }
 
-  private drawImageWithRotation(image: HTMLImageElement, snakePart: SnakeBody, rotation: number) {
+  private drawImageWithRotation(image: HTMLImageElement, snakePart: SnakeBody, rotation: number, color: string) {
     const x = snakePart.x * RESOLUTION;
     const y = snakePart.y * RESOLUTION;
     const width = RESOLUTION;
@@ -87,6 +89,7 @@ export class CanvasHandler {
     this.context.translate(cx, cy);
 
     if (rotation) this.context.rotate(rotation);
+    this.context.filter = color;
 
     this.context.drawImage(image, -width / 2, -height / 2, width, height);
 

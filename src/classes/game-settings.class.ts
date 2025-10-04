@@ -1,118 +1,114 @@
 import {
   CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY,
   DEFAULT_CAN_GO_THROUGH_WALLS,
+  DEFAULT_GAME_MODE,
   DEFAULT_MAP_SIZE,
   DEFAULT_SPEED,
   DEFAULT_VOLUME,
+  GAME_MODE_LOCALSTORAGE_KEY,
   MAP_SIZE_LOCALSTORAGE_KEY,
-  MAX_MAP_SIZE,
-  MAX_SPEED,
-  MIN_MAP_SIZE,
-  MIN_SPEED,
   MUSIC_VOLUME_LOCALSTORAGE_KEY,
   SPEED_LOCALSTORAGE_KEY,
 } from '../constants/settings.constants';
+import { GameMode } from '../types/game-mode.type';
+import { AudioHandler } from './audio-handler.class';
+import { SettingsOverlay } from './overlays/settings.overlay';
 
 export class GameSettings {
-  private _speed: number;
-  private _mapSize: number;
-  private _volume: number;
-  private _canGoThroughWalls: boolean;
+  private _speed!: number;
+  private _mapSize!: number;
+  private _volume!: number;
+  private _canGoThroughWalls!: boolean;
+  private _gameMode!: GameMode;
 
-  private speedRangeInput = document.getElementById('speed-range') as HTMLInputElement;
-  private mapSizeRangeInput = document.getElementById('map-size-range') as HTMLInputElement;
-  private canGoThroughWallsCheckboxInput = document.getElementById('walls-checkbox') as HTMLInputElement;
-  private volumeRangeInput = document.getElementById('music-volume-range') as HTMLInputElement;
+  private settingsOverlay: SettingsOverlay;
+  private audioHandler: AudioHandler;
 
-  constructor() {
-    this._speed = Number(localStorage.getItem(SPEED_LOCALSTORAGE_KEY)) ?? DEFAULT_SPEED;
-    this._mapSize = Number(localStorage.getItem(MAP_SIZE_LOCALSTORAGE_KEY)) ?? DEFAULT_MAP_SIZE;
-    this._volume = Number(localStorage.getItem(MUSIC_VOLUME_LOCALSTORAGE_KEY)) ?? DEFAULT_VOLUME;
-    this._canGoThroughWalls = localStorage.getItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY) === 'true' || DEFAULT_CAN_GO_THROUGH_WALLS;
+  constructor(settingsOverlay: SettingsOverlay, audioHandler: AudioHandler) {
+    this.settingsOverlay = settingsOverlay;
+    this.audioHandler = audioHandler;
+
+    this.gameMode = (localStorage.getItem(GAME_MODE_LOCALSTORAGE_KEY) as GameMode) ?? DEFAULT_GAME_MODE;
+    this.speed = Number(localStorage.getItem(SPEED_LOCALSTORAGE_KEY)) ?? DEFAULT_SPEED;
+    this.mapSize = Number(localStorage.getItem(MAP_SIZE_LOCALSTORAGE_KEY)) ?? DEFAULT_MAP_SIZE;
+    this.volume = Number(localStorage.getItem(MUSIC_VOLUME_LOCALSTORAGE_KEY)) ?? DEFAULT_VOLUME;
+    this.canGoThroughWalls = localStorage.getItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY) === 'true' || DEFAULT_CAN_GO_THROUGH_WALLS;
+
+    this.listenOnEvents();
   }
 
-  listenOnInputChanges(onMapResize: () => void, onVolumeChange: () => void): void {
+  listenOnEvents(): void {
+    this.listenOnGameModeChange();
     this.listenOnSpeedChange();
-    this.listenOnMapSizeChange(onMapResize);
+    this.listenOnMapSizeChange();
     this.listenOnCanGoThroughWallsChange();
-    this.listenVolumeChange(onVolumeChange);
-    this.listenOnRestoreDefaultsButtonClick(onMapResize, onVolumeChange);
+    this.listenVolumeChange();
+    this.listenOnRestoreDefaultsButtonClick();
+  }
+
+  private listenOnGameModeChange(): void {
+    this.settingsOverlay.on('gameModeChange', (newGameMode: GameMode) => (this.gameMode = newGameMode));
   }
 
   private listenOnSpeedChange(): void {
-    this.speedRangeInput.value = this.speed.toString();
-    this.speedRangeInput.min = MIN_SPEED.toString();
-    this.speedRangeInput.max = MAX_SPEED.toString();
-
-    this.speedRangeInput.addEventListener('change', (e: Event) => {
-      this.speed = Number((e.target as HTMLInputElement).value);
-    });
+    this.settingsOverlay.on('speedChange', (newSpeed: number) => (this.speed = newSpeed));
   }
 
-  private listenOnMapSizeChange(onMapResize: () => void): void {
-    this.mapSizeRangeInput.value = this.mapSize.toString();
-    this.mapSizeRangeInput.min = MIN_MAP_SIZE.toString();
-    this.mapSizeRangeInput.max = MAX_MAP_SIZE.toString();
-
-    this.mapSizeRangeInput.addEventListener('change', (e: Event) => {
-      this.mapSize = Number((e.target as HTMLInputElement).value);
-      onMapResize();
-    });
+  private listenOnMapSizeChange(): void {
+    this.settingsOverlay.on('mapSizeChange', (newMapSize: number) => (this.mapSize = newMapSize));
   }
 
   private listenOnCanGoThroughWallsChange(): void {
-    this.canGoThroughWallsCheckboxInput.checked = this.canGoThroughWalls;
-
-    this.canGoThroughWallsCheckboxInput.addEventListener('change', (e: Event) => {
-      this.canGoThroughWalls = (e.target as HTMLInputElement).checked;
-    });
+    this.settingsOverlay.on('canGoThroughWallsChange', (canGoThroughWalls: boolean) => (this.canGoThroughWalls = canGoThroughWalls));
   }
 
-  private listenVolumeChange(onVolumeChange: () => void): void {
-    this.volumeRangeInput.value = this.volume.toString();
-
-    this.volumeRangeInput.addEventListener('change', (e: Event) => {
-      this.volume = Number((e.target as HTMLInputElement).value);
-      onVolumeChange();
-    });
+  private listenVolumeChange(): void {
+    this.settingsOverlay.on('volumeChange', (newVolume: number) => (this.volume = newVolume));
   }
 
-  private listenOnRestoreDefaultsButtonClick(onCanvasResize: () => void, onVolumeChange: () => void): void {
-    (document.getElementById('restore-defaults-button') as HTMLButtonElement).addEventListener('click', () => {
+  private listenOnRestoreDefaultsButtonClick(): void {
+    this.settingsOverlay.on('restoreDefaultsButtonClick', () => {
+      this.gameMode = DEFAULT_GAME_MODE;
       this.speed = DEFAULT_SPEED;
       this.mapSize = DEFAULT_MAP_SIZE;
       this.volume = DEFAULT_VOLUME;
       this.canGoThroughWalls = DEFAULT_CAN_GO_THROUGH_WALLS;
-
-      this.speedRangeInput.value = this.speed.toString();
-      this.mapSizeRangeInput.value = this.mapSize.toString();
-      this.canGoThroughWallsCheckboxInput.checked = this.canGoThroughWalls;
-
-      this.volumeRangeInput.value = this.volume.toString();
-
-      onCanvasResize();
-      onVolumeChange();
     });
+  }
+
+  set gameMode(newGameMode: GameMode) {
+    this._gameMode = newGameMode;
+    localStorage.setItem(GAME_MODE_LOCALSTORAGE_KEY, newGameMode.toString());
+    this.settingsOverlay.gameModeSelect.value = newGameMode;
   }
 
   set speed(newSpeed: number) {
     this._speed = newSpeed;
-    localStorage.setItem(SPEED_LOCALSTORAGE_KEY, this.speed.toString());
+    localStorage.setItem(SPEED_LOCALSTORAGE_KEY, newSpeed.toString());
+    this.settingsOverlay.speedRangeInput.value = newSpeed.toString();
   }
 
   set mapSize(newMapSize: number) {
     this._mapSize = newMapSize;
-    localStorage.setItem(MAP_SIZE_LOCALSTORAGE_KEY, this.mapSize.toString());
+    localStorage.setItem(MAP_SIZE_LOCALSTORAGE_KEY, newMapSize.toString());
+    this.settingsOverlay.mapSizeRangeInput.value = newMapSize.toString();
   }
 
-  set volume(volume: number) {
-    this._volume = volume;
-    localStorage.setItem(MUSIC_VOLUME_LOCALSTORAGE_KEY, this.volume.toString());
+  set volume(newVolume: number) {
+    this._volume = newVolume;
+    localStorage.setItem(MUSIC_VOLUME_LOCALSTORAGE_KEY, newVolume.toString());
+    this.audioHandler.setAudioVolume(newVolume);
+    this.settingsOverlay.volumeRangeInput.value = newVolume.toString();
   }
 
   set canGoThroughWalls(canGoThroughWalls: boolean) {
     this._canGoThroughWalls = canGoThroughWalls;
-    localStorage.setItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY, this.canGoThroughWalls.toString());
+    localStorage.setItem(CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY, canGoThroughWalls.toString());
+    this.settingsOverlay.canGoThroughWallsCheckboxInput.checked = canGoThroughWalls;
+  }
+
+  get gameMode(): GameMode {
+    return this._gameMode;
   }
 
   get speed(): number {
@@ -129,5 +125,9 @@ export class GameSettings {
 
   get canGoThroughWalls(): boolean {
     return this._canGoThroughWalls;
+  }
+
+  get numberOfPlayers(): number {
+    return this.gameMode === 'SINGLE_PLAYER' ? 1 : 2;
   }
 }
