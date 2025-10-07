@@ -15,8 +15,11 @@ export const MAP_SIZE_LOCALSTORAGE_KEY = 'mapSize';
 export const MUSIC_VOLUME_LOCALSTORAGE_KEY = 'musicVolume';
 export const CAN_GO_THROUGH_WALLS_LOCALSTORAGE_KEY = 'canGoThroughWalls';
 export const GAME_MODE_LOCALSTORAGE_KEY = 'gameMode';
+export const HIGH_SCORES_LOCALSTORAGE_KEY = 'highScores';
 
 export const RESOLUTION = 50;
 export const DEFAULT_SNAKE_LENGTH = 3;
 export const EVERY_SPECIAL_APPLE_COUNT = 10;
 export const SPECIAL_APPLE_SCALE = 3;
+
+export const HIGH_SCORES_MAX_LENGTH = 5;

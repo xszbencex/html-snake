@@ -3,6 +3,7 @@
 @import 'styles/overlays/settings.overlay.css';
 @import 'styles/overlays/game-over.overlay.css';
 @import 'styles/overlays/start-game.overlay.css';
+@import 'styles/overlays/scoreboard.overlay.css';
 @import 'styles/layout.css';
 @import 'styles/overlays.css';
 @import 'styles/common.css';

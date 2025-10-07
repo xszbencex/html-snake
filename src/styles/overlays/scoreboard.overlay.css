@@ -1,0 +1,23 @@
+#pvp-score {
+  flex: 1;
+  display: flex;
+  gap: 32px;
+  flex-direction: column;
+}
+
+#pve-score {
+  flex: 1;
+}
+
+.scoreboard-table {
+  width: 20em;
+  border-spacing: 1em;
+}
+
+#scoreboard-overlay h1 {
+  flex: 0;
+}
+
+.score-container {
+  flex: 1;
+}

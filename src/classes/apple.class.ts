@@ -25,7 +25,7 @@ export class Apple {
     this.pulseTime += deltaTime * 0.0005;
 
     if (this.baseScale > 1) {
-      this.baseScale = Math.max(1, this.baseScale - 0.001);
+      this.baseScale = Math.max(1, this.baseScale - 0.002);
     } else {
       this.baseScale = 1;
     }

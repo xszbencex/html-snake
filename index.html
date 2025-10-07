@@ -21,7 +21,41 @@
                 <div class="start-game-buttons">
                   <button id="play-button" class="text-button">PLAY</button>
                   <button id="settings-button" class="text-button">SETTINGS</button>
+                  <button id="scoreboard-button" class="text-button">SCOREBOARD</button>
                 </div>
+              </div>
+
+              <div id="scoreboard-overlay" class="overlay-switcher">
+                <h1>SCOREBOARD</h1>
+
+                <div>
+                  <select id="score-game-mode-select">
+                    <option value="SINGLE_PLAYER">1 player</option>
+                    <option value="PVP">2 player (PVP)</option>
+                    <option value="PVE">2 player (PVE)</option>
+                  </select>
+                </div>
+
+                <div class="score-container">
+                  <h3 id="no-scores-text">No scores yet</h3>
+
+                  <div id="pvp-score"></div>
+
+                  <div id="pve-score">
+                    <table class="scoreboard-table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Score</th>
+                          <th><img src="/apple.png" class="apple-count-image" /></th>
+                        </tr>
+                      </thead>
+                      <tbody id="scoreboard-table-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <button id="scoreboard-back-button" class="text-button">BACK</button>
               </div>
 
               <div id="before-play-overlay" class="overlay-switcher">
@@ -108,6 +142,7 @@
                 </div>
 
                 <button id="restart-game-button" class="text-button">RESTART</button>
+                <button id="main-menu-button" class="text-button">MAIN MENU</button>
               </div>
             </div>
           </div>

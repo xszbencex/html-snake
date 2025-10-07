@@ -6,6 +6,10 @@ export class GameOverOverlay extends BaseOverlay {
     return document.getElementById('restart-game-button') as HTMLButtonElement;
   }
 
+  private get mainMenuButton() {
+    return document.getElementById('main-menu-button') as HTMLButtonElement;
+  }
+
   get finalScoreContainer() {
     return document.getElementById('final-score-container') as HTMLDivElement;
   }
@@ -40,6 +44,7 @@ export class GameOverOverlay extends BaseOverlay {
     this.drawText.style.display = 'none';
     this.winnerText.style.display = 'none';
     this.restartButton.addEventListener('click', () => this.emit('restartButtonClick'), { signal: this.abortSignal });
+    this.mainMenuButton.addEventListener('click', () => this.emit('mainMenuButtonClick'), { signal: this.abortSignal });
   }
 
   onGameEnd(finalScore: number, finalAppleCount: number, winners: Snake[] | undefined) {

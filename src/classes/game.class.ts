@@ -39,13 +39,18 @@ export class Game {
         this.overlayHandler = new OverlayHandler();
         this.gameSettings = new GameSettings(this.overlayHandler.settingsOverlay, this.audioHandler);
         this.objectHandler = new ObjectHandler(this.gameSettings);
-        this.scoreHandler = new ScoreHandler(this.overlayHandler.topBarOverlay);
+        this.scoreHandler = new ScoreHandler(this.overlayHandler.topBarOverlay, this.overlayHandler.scoreboardOverlay);
 
         this.overlayHandler.on('playButtonClick', () => this.onPlayButtonClick());
+        this.overlayHandler.on('scoreboardButtonClick', () => this.onScoreboardButtonClick());
         this.overlayHandler.on('endGameButtonClick', () => this.endGame(this.gameSettings.gameMode === 'PVP' ? [] : undefined));
         this.overlayHandler.on('pauseGameButtonClick', () => this.pauseGame());
         this.overlayHandler.on('continueGameButtonClick', () => this.continueGame());
-        this.overlayHandler.on('restartButtonClick', () => this.initializeGame());
+        this.overlayHandler.on('restartButtonClick', () => {
+          this.initializeGame();
+          this.onPlayButtonClick();
+        });
+        this.overlayHandler.on('mainMenuButtonClick', () => this.initializeGame());
 
         document.addEventListener('keydown', this.keyDownHandler.bind(this));
 
@@ -60,6 +65,11 @@ export class Game {
     this.scoreHandler.initialize();
     this.redrawCanvas();
     this.audioHandler.onGameInit();
+  }
+
+  onScoreboardButtonClick() {
+    this.overlayHandler.scoreboardOverlay.scoreGameModeSelect.value = this.gameSettings.gameMode;
+    this.scoreHandler.showHighScores(this.gameSettings.gameMode);
   }
 
   onPlayButtonClick() {
@@ -95,9 +105,11 @@ export class Game {
 
   endGame(winners?: Snake[]) {
     this.audioHandler.onGameEnd();
+    this.startGameAbortController.abort();
     window.cancelAnimationFrame(this.gameIntervalId);
     this.gameIntervalId = NaN;
     this.overlayHandler.onGameOver(this.scoreHandler.score, this.scoreHandler.appleCount, winners);
+    this.scoreHandler.storeScore(this.gameSettings.gameMode, winners);
   }
 
   redrawCanvas(deltaTime?: number) {
