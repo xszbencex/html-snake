@@ -1,12 +1,12 @@
 @import 'styles/overlays/before-play.overlay.css';
 @import 'styles/overlays/top-bar.overlay.css';
-@import 'styles/overlays/settings.overlay.css';
 @import 'styles/overlays/game-over.overlay.css';
 @import 'styles/overlays/start-game.overlay.css';
 @import 'styles/overlays/scoreboard.overlay.css';
 @import 'styles/layout.css';
 @import 'styles/overlays.css';
 @import 'styles/common.css';
+@import 'styles/inputs.css';
 
 :root {
   font-family: 'Press Start 2P', cursive;
@@ -23,6 +23,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --main-green: #81b622;
+  --secondary-green: #283609;
+  --text-color: white;
 }
 
 * {
@@ -31,7 +35,7 @@
 }
 
 body {
-  color: white;
+  color: var(--text-color);
 }
 
 h1 {

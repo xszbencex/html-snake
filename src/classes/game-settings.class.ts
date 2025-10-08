@@ -86,12 +86,14 @@ export class GameSettings {
     this._speed = newSpeed;
     localStorage.setItem(SPEED_LOCALSTORAGE_KEY, newSpeed.toString());
     this.settingsOverlay.speedRangeInput.value = newSpeed.toString();
+    this.settingsOverlay.speedValueText.innerText = newSpeed.toString();
   }
 
   set mapSize(newMapSize: number) {
     this._mapSize = newMapSize;
     localStorage.setItem(MAP_SIZE_LOCALSTORAGE_KEY, newMapSize.toString());
     this.settingsOverlay.mapSizeRangeInput.value = newMapSize.toString();
+    this.settingsOverlay.mapSizeValueText.innerText = newMapSize.toString();
   }
 
   set volume(newVolume: number) {
@@ -99,6 +101,7 @@ export class GameSettings {
     localStorage.setItem(MUSIC_VOLUME_LOCALSTORAGE_KEY, newVolume.toString());
     this.audioHandler.setAudioVolume(newVolume);
     this.settingsOverlay.volumeRangeInput.value = newVolume.toString();
+    this.settingsOverlay.volumeValueText.innerText = Math.floor(newVolume * 100).toString();
   }
 
   set canGoThroughWalls(canGoThroughWalls: boolean) {

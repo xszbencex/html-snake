@@ -31,6 +31,18 @@ export class SettingsOverlay extends BaseOverlay {
     return document.getElementById('music-volume-range') as HTMLInputElement;
   }
 
+  get volumeValueText() {
+    return document.getElementById('volume-value-text') as HTMLSpanElement;
+  }
+
+  get speedValueText() {
+    return document.getElementById('speed-value-text') as HTMLSpanElement;
+  }
+
+  get mapSizeValueText() {
+    return document.getElementById('map-size-value-text') as HTMLSpanElement;
+  }
+
   constructor() {
     super('settings-overlay');
     this.speedRangeInput.min = MIN_SPEED.toString();
@@ -51,23 +63,23 @@ export class SettingsOverlay extends BaseOverlay {
       { signal: this.abortSignal }
     );
 
-    this.speedRangeInput.addEventListener('change', (e: Event) =>
+    this.speedRangeInput.addEventListener('input', (e: Event) =>
       this.emit('speedChange', Number((e.target as HTMLInputElement).value), { signal: this.abortSignal })
     );
 
     this.mapSizeRangeInput.addEventListener(
-      'change',
+      'input',
       (e: Event) => (this.emit('mapSizeChange', Number((e.target as HTMLInputElement).value)), { signal: this.abortSignal })
+    );
+
+    this.volumeRangeInput.addEventListener('input', (e: Event) =>
+      this.emit('volumeChange', Number((e.target as HTMLInputElement).value), { signal: this.abortSignal })
     );
 
     this.canGoThroughWallsCheckboxInput.addEventListener(
       'change',
       (e: Event) => this.emit('canGoThroughWallsChange', (e.target as HTMLInputElement).checked),
       { signal: this.abortSignal }
-    );
-
-    this.volumeRangeInput.addEventListener('change', (e: Event) =>
-      this.emit('volumeChange', Number((e.target as HTMLInputElement).value), { signal: this.abortSignal })
     );
   }
 }
