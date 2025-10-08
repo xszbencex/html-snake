@@ -91,7 +91,7 @@
               <div id="settings-overlay" class="overlay-switcher">
                 <h1>SETTINGS</h1>
                 <div>
-                  <label class="input-label" for="game-mode-select">GAME MODE:</label>
+                  <label for="game-mode-select">GAME MODE:</label>
                   <select id="game-mode-select">
                     <option value="SINGLE_PLAYER">1 player</option>
                     <option value="PVP">2 player (PVP)</option>
@@ -100,23 +100,28 @@
                 </div>
 
                 <div>
-                  <label class="input-label" for="speed-range">SPEED:</label>
+                  <label for="speed-range">SPEED:</label>
                   <input type="range" id="speed-range" name="speed-range" min="5" max="15" step="1" value="10" class="range-input" />
+                  <span id="speed-value-text"></span>
                 </div>
 
                 <div>
-                  <label class="input-label" for="map-size-range">MAP SIZE:</label>
+                  <label for="map-size-range">MAP SIZE:</label>
                   <input type="range" id="map-size-range" name="map-size-range" step="1" class="range-input" />
+                  <span id="map-size-value-text"></span>
                 </div>
 
                 <div>
-                  <label class="input-label" for="music-volume-range">VOLUME:</label>
+                  <label for="music-volume-range">VOLUME:</label>
                   <input type="range" id="music-volume-range" name="music-volume-range" step="0.01" min="0" max="1" class="range-input" />
+                  <span id="volume-value-text"></span>
                 </div>
 
                 <div>
-                  <label class="input-label" for="walls-checkbox">CAN GO THROUGH WALLS:</label>
-                  <input type="checkbox" id="walls-checkbox" name="walls-checkbox" class="checkbox" />
+                  <label class="checkbox-label" for="walls-checkbox">
+                    CAN GO THROUGH WALLS:
+                    <input type="checkbox" id="walls-checkbox" name="walls-checkbox" />
+                  </label>
                 </div>
 
                 <button id="restore-defaults-button" class="text-button">RESTORE DEFAULTS</button>
