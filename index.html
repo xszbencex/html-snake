@@ -2,12 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="./snake-head-long.png" />
+    <link rel="icon" type="image/png" href="./snake-head.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <title>Snakes</title>
-    <script type="module" crossorigin src="/html-snake/assets/index-DEe3Sy6i.js"></script>
-    <link rel="stylesheet" crossorigin href="/html-snake/assets/index-DpphQUAA.css">
+    <script type="module" crossorigin src="/html-snake/assets/index-Cd0wiubk.js"></script>
+    <link rel="stylesheet" crossorigin href="/html-snake/assets/index-Be4CKjoq.css">
   </head>
   <body>
     <div class="container">
@@ -19,7 +19,9 @@
                 <h1>SNAKES</h1>
 
                 <div class="start-game-buttons">
-                  <button id="play-button" class="text-button">PLAY</button>
+                  <button id="single-play-button" class="text-button">1 PLAYER</button>
+                  <button id="pvp-play-button" class="text-button">2 PLAYER (PVP)</button>
+                  <button id="pve-play-button" class="text-button">2 PLAYER (PVE)</button>
                   <button id="settings-button" class="text-button">SETTINGS</button>
                   <button id="scoreboard-button" class="text-button">SCOREBOARD</button>
                 </div>
@@ -90,14 +92,6 @@
 
               <div id="settings-overlay" class="overlay-switcher">
                 <h1>SETTINGS</h1>
-                <div>
-                  <label for="game-mode-select">GAME MODE:</label>
-                  <select id="game-mode-select">
-                    <option value="SINGLE_PLAYER">1 player</option>
-                    <option value="PVP">2 player (PVP)</option>
-                    <option value="PVE">2 player (PVE)</option>
-                  </select>
-                </div>
 
                 <div>
                   <label for="speed-range">SPEED:</label>
