@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="./snake-head-long.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <title>Snakes</title>
+    <script type="module" crossorigin src="/html-snake/assets/index-DEe3Sy6i.js"></script>
+    <link rel="stylesheet" crossorigin href="/html-snake/assets/index-DpphQUAA.css">
+  </head>
+  <body>
+    <div class="container">
+      <div id="page-wrapper" class="page-wrapper">
+        <div id="game-wrapper" class="game-wrapper">
+          <div class="canvas-overlay">
+            <div class="canvas-overlay-content">
+              <div id="start-game-overlay" class="overlay-switcher">
+                <h1>SNAKES</h1>
+
+                <div class="start-game-buttons">
+                  <button id="play-button" class="text-button">PLAY</button>
+                  <button id="settings-button" class="text-button">SETTINGS</button>
+                  <button id="scoreboard-button" class="text-button">SCOREBOARD</button>
+                </div>
+              </div>
+
+              <div id="scoreboard-overlay" class="overlay-switcher">
+                <h1>SCOREBOARD</h1>
+
+                <div>
+                  <select id="score-game-mode-select">
+                    <option value="SINGLE_PLAYER">1 player</option>
+                    <option value="PVP">2 player (PVP)</option>
+                    <option value="PVE">2 player (PVE)</option>
+                  </select>
+                </div>
+
+                <div class="score-container">
+                  <h3 id="no-scores-text">No scores yet</h3>
+
+                  <div id="pvp-score"></div>
+
+                  <div id="pve-score">
+                    <table class="scoreboard-table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Score</th>
+                          <th><img src="./apple.png" class="apple-count-image" /></th>
+                        </tr>
+                      </thead>
+                      <tbody id="scoreboard-table-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <button id="scoreboard-back-button" class="text-button">BACK</button>
+              </div>
+
+              <div id="before-play-overlay" class="overlay-switcher">
+                <div id="single-player-hint" class="keyboard-hint-container">
+                  <img src="./keyboard-arrows-pixel-art.png" class="arrow-keys-image" alt="Keyboard arrows" />
+                  <span>OR</span>
+                  <img src="./keyboard-wasd.png" class="arrow-keys-image" alt="Keyboard WASD" />
+                </div>
+
+                <div id="multiplayer-hint" class="keyboard-hint-container">
+                  <div class="tick-container">
+                    <img src="./tick-icon.png" class="tick-icon-image" alt="Tick icon" />
+
+                    <div class="player-container">
+                      <img src="./keyboard-arrows-pixel-art.png" class="arrow-keys-image" alt="Keyboard arrows" />
+                      <span>Player 1</span>
+                      <img src="./snake-head.png" class="snake-head-icon" alt="" />
+                    </div>
+                  </div>
+
+                  <div class="tick-container">
+                    <img src="./tick-icon.png" class="tick-icon-image" alt="Tick icon" />
+
+                    <div class="player-container">
+                      <img src="./keyboard-wasd.png" class="arrow-keys-image" alt="Keyboard WASD" />
+                      <span>Player 2</span>
+                      <img src="./snake-head.png" class="snake-head-icon" alt="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="settings-overlay" class="overlay-switcher">
+                <h1>SETTINGS</h1>
+                <div>
+                  <label for="game-mode-select">GAME MODE:</label>
+                  <select id="game-mode-select">
+                    <option value="SINGLE_PLAYER">1 player</option>
+                    <option value="PVP">2 player (PVP)</option>
+                    <option value="PVE">2 player (PVE)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="speed-range">SPEED:</label>
+                  <input type="range" id="speed-range" name="speed-range" min="5" max="15" step="1" value="10" class="range-input" />
+                  <span id="speed-value-text"></span>
+                </div>
+
+                <div>
+                  <label for="map-size-range">MAP SIZE:</label>
+                  <input type="range" id="map-size-range" name="map-size-range" step="1" class="range-input" />
+                  <span id="map-size-value-text"></span>
+                </div>
+
+                <div>
+                  <label for="music-volume-range">VOLUME:</label>
+                  <input type="range" id="music-volume-range" name="music-volume-range" step="0.01" min="0" max="1" class="range-input" />
+                  <span id="volume-value-text"></span>
+                </div>
+
+                <div>
+                  <label class="checkbox-label" for="walls-checkbox">
+                    CAN GO THROUGH WALLS:
+                    <input type="checkbox" id="walls-checkbox" name="walls-checkbox" />
+                  </label>
+                </div>
+
+                <button id="restore-defaults-button" class="text-button">RESTORE DEFAULTS</button>
+
+                <button id="back-button" class="text-button">BACK</button>
+              </div>
+
+              <div id="game-paused-overlay" class="overlay-switcher">
+                <h1>PAUSED</h1>
+              </div>
+
+              <div id="game-over-overlay" class="overlay-switcher">
+                <h1>GAME OVER</h1>
+
+                <div id="final-score-container">
+                  <h2 class="score">Your score: <span id="final-score">0</span></h2>
+                  <h2 class="score"><img src="./apple.png" class="apple-count-image" />:<span id="final-apple-count">0</span></h2>
+                </div>
+
+                <div id="winner-container">
+                  <h2 id="draw-text" class="score">DRAW</h2>
+                  <h2 id="winner-text" class="score"></h2>
+                </div>
+
+                <button id="restart-game-button" class="text-button">RESTART</button>
+                <button id="main-menu-button" class="text-button">MAIN MENU</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="top-bar-overlay" class="overlay-switcher">
+            <div class="top-bar">
+              <h4 class="pve-info">Score: <span id="current-score">0</span></h4>
+              <h4 class="pve-info"><img src="./apple.png" class="apple-count-image" />:<span id="apple-count">0</span></h4>
+              <div>
+                <button id="pause-game-button" class="icon-button">
+                  <img src="./pause-icon.png" class="icon-image" alt="pause-icon" />
+                </button>
+
+                <button id="continue-game-button" class="icon-button">
+                  <img src="./play-icon.png" class="icon-image" alt="play-icon" />
+                </button>
+
+                <button id="end-game-button" class="icon-button">
+                  <img src="./close-icon.png" class="icon-image" alt="stop-icon" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="game-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
