@@ -1,5 +1,4 @@
 import { MAX_MAP_SIZE, MAX_SPEED, MIN_MAP_SIZE, MIN_SPEED } from '../../constants/settings.constants';
-import { GameMode } from '../../types/game-mode.type';
 import { BaseOverlay } from './base.overlay';
 
 export class SettingsOverlay extends BaseOverlay {
@@ -9,10 +8,6 @@ export class SettingsOverlay extends BaseOverlay {
 
   private get restoreDefaultsButton() {
     return document.getElementById('restore-defaults-button') as HTMLButtonElement;
-  }
-
-  get gameModeSelect() {
-    return document.getElementById('game-mode-select') as HTMLSelectElement;
   }
 
   get speedRangeInput() {
@@ -56,12 +51,6 @@ export class SettingsOverlay extends BaseOverlay {
     this.restoreDefaultsButton.addEventListener('click', () => this.emit('restoreDefaultsButtonClick'), {
       signal: this.abortSignal,
     });
-
-    this.gameModeSelect.addEventListener(
-      'change',
-      (e: Event) => this.emit('gameModeChange', (e.target as HTMLInputElement).value as GameMode),
-      { signal: this.abortSignal }
-    );
 
     this.speedRangeInput.addEventListener('input', (e: Event) =>
       this.emit('speedChange', Number((e.target as HTMLInputElement).value), { signal: this.abortSignal })

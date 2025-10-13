@@ -1,6 +1,7 @@
 import { DIRECTION_KEYS, OPPOSITE_DIRECTION } from '../constants/direction.constant';
 import { AppleEatenInfo } from '../interfaces/apple-eaten-info.interface';
 import { isDirectionKey } from '../typeguards/direction-key.typeguard';
+import { GameMode } from '../types/game-mode.type';
 import { AudioHandler } from './audio-handler.class';
 import { CanvasHandler } from './canvas-handler.class';
 import { GameSettings } from './game-settings.class';
@@ -25,7 +26,7 @@ export class Game {
   scoreHandler!: ScoreHandler;
 
   startGameAbortController = new AbortController();
-  AbortController = new AbortController();
+  pauseGameAbortController = new AbortController();
 
   constructor() {
     this.audioHandler = new AudioHandler();
@@ -41,14 +42,14 @@ export class Game {
         this.objectHandler = new ObjectHandler(this.gameSettings);
         this.scoreHandler = new ScoreHandler(this.overlayHandler.topBarOverlay, this.overlayHandler.scoreboardOverlay);
 
-        this.overlayHandler.on('playButtonClick', () => this.onPlayButtonClick());
+        this.overlayHandler.on('playButtonClick', (gameMode: GameMode) => this.onPlayButtonClick(gameMode));
         this.overlayHandler.on('scoreboardButtonClick', () => this.onScoreboardButtonClick());
         this.overlayHandler.on('endGameButtonClick', () => this.endGame(this.gameSettings.gameMode === 'PVP' ? [] : undefined));
         this.overlayHandler.on('pauseGameButtonClick', () => this.pauseGame());
         this.overlayHandler.on('continueGameButtonClick', () => this.continueGame());
         this.overlayHandler.on('restartButtonClick', () => {
           this.initializeGame();
-          this.onPlayButtonClick();
+          this.onPlayButtonClick(this.gameSettings.gameMode);
         });
         this.overlayHandler.on('mainMenuButtonClick', () => this.initializeGame());
 
@@ -72,7 +73,8 @@ export class Game {
     this.scoreHandler.showHighScores(this.gameSettings.gameMode);
   }
 
-  onPlayButtonClick() {
+  onPlayButtonClick(gameMode: GameMode) {
+    this.gameSettings.gameMode = gameMode;
     this.canvasHandler.resizeCanvas(this.gameSettings.mapSize);
     this.objectHandler.initialize();
     this.overlayHandler.beforePlayOverlay.showHint(this.gameSettings.gameMode, this.objectHandler.snakes);
@@ -82,6 +84,8 @@ export class Game {
   }
 
   startGame() {
+    this.pauseGameAbortController = new AbortController();
+    document.addEventListener('keydown', this.pauseGameKeydownHandler.bind(this), { signal: this.pauseGameAbortController.signal });
     requestAnimationFrame((timestamp) => this.draw(timestamp));
     this.audioHandler.backgroundMusic.play();
     this.overlayHandler.onPlay(this.gameSettings.gameMode);
@@ -104,6 +108,7 @@ export class Game {
   }
 
   endGame(winners?: Snake[]) {
+    this.pauseGameAbortController.abort();
     this.audioHandler.onGameEnd();
     this.startGameAbortController.abort();
     window.cancelAnimationFrame(this.gameIntervalId);
@@ -149,6 +154,17 @@ export class Game {
 
       this.redrawCanvas();
       this.endGame(winnerIndexes);
+    }
+  }
+
+  pauseGameKeydownHandler(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      if (this.overlayHandler.gamePausedOverlay.isActivated) {
+        this.overlayHandler.topBarOverlay.continueGameButton.click();
+      } else {
+        this.overlayHandler.topBarOverlay.pauseGameButton.click();
+      }
     }
   }
 

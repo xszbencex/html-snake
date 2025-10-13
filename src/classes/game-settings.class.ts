@@ -38,16 +38,11 @@ export class GameSettings {
   }
 
   listenOnEvents(): void {
-    this.listenOnGameModeChange();
     this.listenOnSpeedChange();
     this.listenOnMapSizeChange();
     this.listenOnCanGoThroughWallsChange();
     this.listenVolumeChange();
     this.listenOnRestoreDefaultsButtonClick();
-  }
-
-  private listenOnGameModeChange(): void {
-    this.settingsOverlay.on('gameModeChange', (newGameMode: GameMode) => (this.gameMode = newGameMode));
   }
 
   private listenOnSpeedChange(): void {
@@ -79,7 +74,6 @@ export class GameSettings {
   set gameMode(newGameMode: GameMode) {
     this._gameMode = newGameMode;
     localStorage.setItem(GAME_MODE_LOCALSTORAGE_KEY, newGameMode.toString());
-    this.settingsOverlay.gameModeSelect.value = newGameMode;
   }
 
   set speed(newSpeed: number) {

@@ -1,11 +1,14 @@
 .text-button,
 .icon-button {
+  all: unset;
+  color: var(--text-color);
   font: inherit;
   background-color: unset;
   border: none;
   padding: 0.2em;
   cursor: pointer;
   text-shadow: inherit;
+  text-transform: uppercase;
 }
 
 .icon-image {

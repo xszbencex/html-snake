@@ -22,8 +22,8 @@ export class OverlayHandler extends EventEmitter {
   constructor() {
     super();
     this.switchOverlay([this.startGameOverlay]);
-    this.startGameOverlay.on('playButtonClick', () => {
-      this.emit('playButtonClick');
+    this.startGameOverlay.on('playButtonClick', (gameMode: GameMode) => {
+      this.emit('playButtonClick', gameMode);
       this.switchOverlay([this.beforePlayOverlay, this.topBarOverlay]);
     });
 

@@ -5,8 +5,8 @@ export abstract class BaseOverlay extends EventEmitter {
     return document.getElementById(this.containerId) as HTMLDivElement;
   }
 
+  isActivated = false;
   private containerId: string;
-  private isActivated = false;
   private eventListenersAbortController!: AbortController;
 
   get abortSignal(): AbortSignal {

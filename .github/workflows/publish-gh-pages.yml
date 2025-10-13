@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   workflow_dispatch:
 
 jobs:
@@ -22,9 +22,9 @@ jobs:
         run: npm install
 
       - name: Build project
-        export BASE_PATH="/html-jatek/"
-        npm run build
-
+        run: |
+          export BASE_PATH="/html-snake/"
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

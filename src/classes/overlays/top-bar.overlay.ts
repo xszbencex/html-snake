@@ -6,11 +6,11 @@ export class TopBarOverlay extends BaseOverlay {
     return document.getElementById('end-game-button') as HTMLButtonElement;
   }
 
-  private get pauseGameButton() {
+  get pauseGameButton() {
     return document.getElementById('pause-game-button') as HTMLButtonElement;
   }
 
-  private get continueGameButton() {
+  get continueGameButton() {
     return document.getElementById('continue-game-button') as HTMLButtonElement;
   }
 
