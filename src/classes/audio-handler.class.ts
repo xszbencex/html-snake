@@ -5,8 +5,8 @@ export class AudioHandler {
   gameOverSound!: HTMLAudioElement;
 
   async preloadAudio(): Promise<void> {
-    this.backgroundMusic = await loadAudio('/background-music.mp3');
-    this.gameOverSound = await loadAudio('/game-over-sound.mp3');
+    this.backgroundMusic = await loadAudio('./background-music.mp3');
+    this.gameOverSound = await loadAudio('./game-over-sound.mp3');
 
     this.backgroundMusic.loop = true;
   }

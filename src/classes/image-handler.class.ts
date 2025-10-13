@@ -8,10 +8,10 @@ export class ImageHandler {
   snakeTailImage!: HTMLImageElement;
 
   async preloadImages(): Promise<void> {
-    this.appleImage = await loadImage('/apple.png');
-    this.snakeBodyImage = await loadImage('/snake-body.png');
-    this.snakeBodyCornerImage = await loadImage('/snake-body-corner.png');
-    this.snakeHeadImage = await loadImage('/snake-head.png');
-    this.snakeTailImage = await loadImage('/snake-tail.png');
+    this.appleImage = await loadImage('./apple.png');
+    this.snakeBodyImage = await loadImage('./snake-body.png');
+    this.snakeBodyCornerImage = await loadImage('./snake-body-corner.png');
+    this.snakeHeadImage = await loadImage('./snake-head.png');
+    this.snakeTailImage = await loadImage('./snake-tail.png');
   }
 }

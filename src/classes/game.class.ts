@@ -156,6 +156,8 @@ export class Game {
     const directionInfo = this.getDirectionByKey(event.key);
 
     if (directionInfo) {
+      event.preventDefault();
+
       directionInfo.snake.direction = directionInfo.direction;
     }
   }
@@ -164,6 +166,7 @@ export class Game {
     const directionInfo = this.getDirectionByKey(event.key);
 
     if (directionInfo) {
+      event.preventDefault();
       this.overlayHandler.beforePlayOverlay.tickPlayerHint(directionInfo.snake.index);
       directionInfo.snake.isReady = true;
 
