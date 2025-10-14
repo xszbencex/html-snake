@@ -6,7 +6,7 @@ export const DEFAULT_MAP_SIZE = 15;
 export const MIN_SPEED = 8;
 export const MAX_SPEED = 20;
 export const DEFAULT_SPEED = 12;
-export const DEFAULT_VOLUME = 0.5;
+export const DEFAULT_VOLUME = 0.25;
 export const DEFAULT_CAN_GO_THROUGH_WALLS = true;
 export const DEFAULT_GAME_MODE: GameMode = 'SINGLE_PLAYER';
 

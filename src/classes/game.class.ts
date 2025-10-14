@@ -160,6 +160,7 @@ export class Game {
   pauseGameKeydownHandler(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.preventDefault();
+
       if (this.overlayHandler.gamePausedOverlay.isActivated) {
         this.overlayHandler.topBarOverlay.continueGameButton.click();
       } else {
@@ -170,19 +171,18 @@ export class Game {
 
   keyDownHandler(event: KeyboardEvent) {
     const directionInfo = this.getDirectionByKey(event.key);
+    event.preventDefault();
 
     if (directionInfo) {
-      event.preventDefault();
-
       directionInfo.snake.direction = directionInfo.direction;
     }
   }
 
   startGameKeydownHandler(event: KeyboardEvent) {
     const directionInfo = this.getDirectionByKey(event.key);
+    event.preventDefault();
 
     if (directionInfo) {
-      event.preventDefault();
       this.overlayHandler.beforePlayOverlay.tickPlayerHint(directionInfo.snake.index);
       directionInfo.snake.isReady = true;
 
